@@ -1,0 +1,30 @@
+.navtab {
+    display: flex;
+    background-color: #272727;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+.navtab__container {
+    display: flex;
+    padding: 0;
+    margin: 0 auto;
+    justify-content: space-between;
+    min-width: 255px;
+}    
+
+.navtab__link {
+    text-decoration-line: underline;
+    color: white;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 16px;
+    align-items: center;
+    transition: opacity .5s ease;
+}
+
+.navtab__link:hover {
+    opacity: .5;
+    cursor: pointer;
+}

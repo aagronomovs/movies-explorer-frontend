@@ -1,0 +1,39 @@
+.promo {
+    width: 100%;
+    background-color: #073042;
+}
+
+.promo__container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    align-items: center;
+
+}
+
+.promo__image {
+    width: 320px;
+    height: 320px;
+    margin-top: 82px;
+    margin-bottom: 122px;
+    text-align: center;
+    opacity: .2;
+    position: relative;
+    z-index: 1;
+}
+
+.promo__title {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 50px;
+    line-height: 58px;
+    width: 730px;
+    text-align: center;
+    letter-spacing: -0.04em;
+    color: #FFFFFF;
+    margin-top: 184px;
+    margin-bottom: 224px;
+    position: absolute;
+    z-index: 2;
+}
