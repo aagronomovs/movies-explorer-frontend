@@ -1,17 +1,15 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from '../Header/Header';
-import Promo from '../Promo/Promo';
-import NavTab from '../NavTab/NavTab';
-import AboutProject from '../AboutProject/AboutProject';
+import Main from '../Main/Main';
+import Footer from '../Footer/Footer';
 
 function App() {
   return (
     <div className="page">
       <Header />
-      <Promo />
-      <NavTab />
-      <AboutProject />
+      <Main />
+      <Footer />
        <Routes>
          <Route path='/' exact></Route>
            </Routes> 
