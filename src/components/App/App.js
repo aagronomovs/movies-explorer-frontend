@@ -1,19 +1,31 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Header from '../Header/Header';
 import Main from '../Main/Main';
 import Footer from '../Footer/Footer';
+import Movies from '../Movies/Movies';
+import SavedMovies from '../SavedMovies/SavedMovies';
 
 function App() {
   return (
     <div className="page">
       <Header />
-      <Main />
-      <Footer />
-       <Routes>
-         <Route path='/' exact></Route>
-           </Routes> 
+        <Routes>
+          <Route path='/' exact>
+            <Main />
+          </Route>
+
+          <Route path='/movies'>
+            <Movies />
+          </Route>
+
+          <Route path='/saved-movies'>
+            <SavedMovies />
+          </Route>
       
+      </Routes>
+      <Footer />
+             
     </div>
   );
 }
