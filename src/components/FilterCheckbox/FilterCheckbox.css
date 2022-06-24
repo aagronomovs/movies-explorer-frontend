@@ -1,13 +1,15 @@
 .checkbox {
     height: 20px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     margin: 0 auto;
+    
 }
 
 .checkbox__input {
     position: relative;
     opacity: 0;
+    z-index: -1;
 }
 
 .checkbox__input+.checkbox__label {
@@ -15,7 +17,7 @@
     font-weight: 400;
     font-size: 13px;
     line-height: 18px;
-    padding: 0 0 0 14px;
+    padding: 0 0 0 50px;
     cursor: pointer;
 }
 
@@ -29,6 +31,7 @@
     background-color: #3DDC84;
     border-radius: 20px;
     transition: 300ms;
+    
 }
 
 .checkbox__input+.checkbox__label::after {
@@ -40,4 +43,14 @@
     height: 10px;
     border-radius: 50%;
     background-color: #FFFFFF;
+    transition: 300ms;
+    
+}
+
+.checkbox__input:checked+.checkbox__label::before {
+    background-color: #EBEBEB;
+}
+
+.checkbox__input:checked+.checkbox__label::after {
+    left: 10px;
 }

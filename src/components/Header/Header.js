@@ -4,8 +4,9 @@ import logo from '../../images/logo.svg';
 import './Header.css';
 import Navigation from '../Navigation/Navigation';
 
-export default function Header({loggedIn}) {
+export default function Header() {
     const routes = useLocation();
+    const [loggedIn, setLoggedIn] = React.useState(false);
 
     return ( 
         <header className={`${!loggedIn || routes.pathname === '/' ? 'header' : 'header_black'}`} >

@@ -5,6 +5,7 @@ export default function Portfolio() {
     return ( 
         
         <section className='portfolio' >
+            <div className='portfolio__container'>
             <h2 className='portfolio__title'>Портфолио</h2>
             <nav>
                 <ul className='portfolio__list'>
@@ -28,7 +29,7 @@ export default function Portfolio() {
                     </li>
                 </ul>
             </nav>
-                      
+            </div>          
         </section>
     );
 }

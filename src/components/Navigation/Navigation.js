@@ -25,7 +25,7 @@ export default function Navigation() {
       <div className='menu__box'>
         <img className='menu__account-image' src={ icon_account } alt='Иконка аккаунта' />
       </div>
-      <button className='menu_open-button' onClick={openMenu} />
+      <button className={`menu_open-button ${isMenuOpened ? 'close' : ''}`} onClick={openMenu} />
       <div className={`'menu__mobile' ${isMenuOpened ? 'active' : ''}`}>
         <button className='menu_close-button' onClick={closeMenu} />
         <nav className='menu__navigation_mobile'>

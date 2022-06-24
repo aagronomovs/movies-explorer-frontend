@@ -1,0 +1,142 @@
+.profile {
+    width: 100%;
+    background-color: #202020;
+    margin: 0 auto;
+}
+
+.profile__container {
+    width: 410px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 74px 0 70px;
+}
+
+.profile__header {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 29px;
+    text-align: center;
+    margin: 0 0 123px;
+}
+
+.profile__form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile__label {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 13px;
+    color: #FFFFFF;
+    border-bottom: 1px solid #424242;
+}
+
+.profile__input {
+    height: 33px;
+    width: 90%;
+    background-color: transparent;
+    color: #FFFFFF;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 13px;
+    text-align: right;
+    border: 0;
+    padding: 0;
+    
+}
+
+.profile__input:focus,
+.profile__input:active {
+    outline: none;
+}
+
+.profile__input:last-of-type {
+    border-bottom: none;
+}
+
+.profile__button {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 16px;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    border: none;
+    background-color: transparent;
+    transition: 300ms;
+    margin-top: 220px;
+}
+
+.profile__button:hover {
+    cursor: pointer;
+    opacity: .7;
+    transition: 300ms;
+}
+
+.profile__logout-link {
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 16px;
+    text-align: center;
+    color: #EE3465;
+    margin-top: 16px;
+    transition: 300ms;
+}
+
+.profile__logout-link:hover {
+    cursor: pointer;
+    opacity: .7;
+    transition: 300ms;
+}
+
+@media (max-width: 768px) {
+    .profile__container {
+        padding: 236px 0 269px;
+    }
+
+    .profile__header {
+        margin-bottom: 96px;
+    }
+
+    .profile__button {
+        margin-top: 210px;
+    }
+}
+
+@media (max-width: 425px) {
+
+    .profile__container {
+        width: 260px;
+        padding: 70px 0 40px;
+    }
+
+    .profile__header {
+        margin-bottom: 80px;
+    }
+
+    .profile__input {
+        width: 80%;
+    }
+
+    .profile__button {
+        margin-top: 379px;
+        font-size: 12px;
+        line-height: 15px;
+    }
+
+    .profile__logout-link {
+        font-size: 12px;
+        line-height: 15px;
+    }
+}
