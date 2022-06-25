@@ -68,7 +68,7 @@
 
 .portfolio__item-link {
     text-decoration: none;
-    }
+}
 
 @media (max-width: 1280px) {
     .portfolio__container {

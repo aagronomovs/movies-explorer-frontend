@@ -2,8 +2,9 @@
     height: 20px;
     display: flex;
     align-items: flex-start;
-    margin: 0 auto;
-    
+    justify-content: flex-start;
+    margin: 0;
+
 }
 
 .checkbox__input {
@@ -31,7 +32,7 @@
     background-color: #3DDC84;
     border-radius: 20px;
     transition: 300ms;
-    
+
 }
 
 .checkbox__input+.checkbox__label::after {
@@ -44,7 +45,7 @@
     border-radius: 50%;
     background-color: #FFFFFF;
     transition: 300ms;
-    
+
 }
 
 .checkbox__input:checked+.checkbox__label::before {

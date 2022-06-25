@@ -45,7 +45,7 @@
 }
 
 
-@media (max-width: 425px){
+@media (max-width: 425px) {
     .error__container {
         max-width: 300px;
         padding: 329px 0 30px;
@@ -55,13 +55,13 @@
         font-size: 80px;
         line-height: 97px;
     }
-    
+
     .error__text {
         font-size: 12px;
         line-height: 15px;
         margin: 10px auto 284px;
     }
-    
+
     .error__link {
         font-size: 12px;
         line-height: 15px;

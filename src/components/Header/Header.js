@@ -1,30 +1,42 @@
 import React from 'react';
-import { Link, useLocation } from "react-router-dom";
+import { Link, Route, Switch } from "react-router-dom";
 import logo from '../../images/logo.svg';
 import './Header.css';
 import Navigation from '../Navigation/Navigation';
+import BurgerMenu from '../BurgerMenu/BurgerMenu';
 
 export default function Header() {
-    const routes = useLocation();
     const [loggedIn, setLoggedIn] = React.useState(false);
 
     return ( 
-        <header className={`${!loggedIn || routes.pathname === '/' ? 'header' : 'header_black'}`} >
-            <div className='header__container'>
-                <Link to='/' className='header__link' target='_self'>
-                    <img className ='header_logo' src = {logo} alt = "Логотип" />
-                </Link>
-                {loggedIn ? (
-                    <Navigation />
-                 ) : (
-                    <nav className='header__navigation'>
-                        <Link to='/signup' className='header__registration header__link' target='_self'>Регистрация</Link>
-                        <Link to='/signin'>
-                            <button className='header__login-button header__link' target='_self'>Войти</button>
+        <Switch>
+            <Route exact path='/'>
+                <header className='header'>
+                    <div className='header__container'>
+                        <Link to='/'>
+                            <img src={logo} className='header__logo' alt='Логотип' />
                         </Link>
-                    </nav>
-                )}
-            </div>
-        </header>
+                        <div className='header__navlink'>
+                            <Navigation loggedIn={false} />
+                        </div>
+                    </div>
+                </header>
+            </Route>
+
+            <Route exact path='/(movies|saved-movies|profile)'>
+                <header className='header_black'>
+                    <div className='header__container'>
+                        <Link to='/'>
+                            <img src={logo} className='header__logo' alt='Логотип' />
+                        </Link>
+                        <div className='header__navlink header__navlink__visible'>
+                            <Navigation loggedIn={true} />
+                        </div>
+                        <BurgerMenu />
+                    </div>
+                    
+                </header>
+            </Route>
+        </Switch>
     );
 }

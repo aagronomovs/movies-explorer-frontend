@@ -139,8 +139,8 @@
     opacity: .7;
 }
 
-@media (max-width: 768px){
-    .register__container{
+@media (max-width: 768px) {
+    .register__container {
         padding: 232px 0;
         align-self: flex-start;
     }
@@ -174,20 +174,20 @@
         font-size: 12px;
         line-height: 15px;
     }
-    
-    .register__link{
+
+    .register__link {
         font-size: 12px;
         line-height: 15px;
     }
 
-    .register__button{
+    .register__button {
         margin-top: 157px;
         height: 45px;
         font-size: 12px;
         line-height: 15px;
     }
 
-    .register__logo-link{
+    .register__logo-link {
         align-self: center;
     }
-    }
+}

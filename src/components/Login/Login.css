@@ -139,8 +139,8 @@
     opacity: .7;
 }
 
-@media (max-width: 768px){
-    .login__container{
+@media (max-width: 768px) {
+    .login__container {
         padding: 232px 0;
         align-self: flex-start;
     }
@@ -174,20 +174,20 @@
         font-size: 12px;
         line-height: 15px;
     }
-    
-    .login__link{
+
+    .login__link {
         font-size: 12px;
         line-height: 15px;
     }
 
-    .login__button{
+    .login__button {
         margin-top: 157px;
         height: 45px;
         font-size: 12px;
         line-height: 15px;
     }
 
-    .login__logo-link{
+    .login__logo-link {
         align-self: center;
     }
-    }
+}

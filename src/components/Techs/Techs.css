@@ -37,7 +37,7 @@
     text-align: center;
     letter-spacing: -0.04em;
     margin: 0 auto;
-}    
+}
 
 .techs__text {
     max-width: 460px;
@@ -74,83 +74,83 @@
     letter-spacing: -0.04em;
 }
 
-@media (max-width: 1280px){
+@media (max-width: 1280px) {
     .techs__container {
         width: calc(100% - 140px)
     }
 }
 
-@media (max-width: 1020px){
+@media (max-width: 1020px) {
     .techs__container {
         width: calc(100% - 100px);
         padding: 90px 0;
     }
-    
+
     .techs__item {
-            height: 57px;
-            font-size: 12px;
-            line-height: 15px;
-        }
-        
+        height: 57px;
+        font-size: 12px;
+        line-height: 15px;
+    }
+
     .techs__grid {
         grid-template-columns: repeat(auto-fit, 84px);
     }
 }
 
-    @media (max-width: 768px) {
-        .techs__line {
-            margin-bottom: 80px;
-        }
+@media (max-width: 768px) {
+    .techs__line {
+        margin-bottom: 80px;
+    }
 
-        .techs__text {
-            max-width: 460px;
-            font-size: 12px;
-            line-height: 18px;
-            margin: 22px auto 83px;
-        }
+    .techs__text {
+        max-width: 460px;
+        font-size: 12px;
+        line-height: 18px;
+        margin: 22px auto 83px;
+    }
 
-        .techs__grid {
-            width: 100%;
-        }
+    .techs__grid {
+        width: 100%;
+    }
 }
 
-    @media (max-width: 425px){
-        .techs {
-            width: 100%;
-            background-color: #202020;
-            margin: 0 auto;
-            display: flex;
-        }
+@media (max-width: 425px) {
+    .techs {
+        width: 100%;
+        background-color: #202020;
+        margin: 0 auto;
+        display: flex;
+    }
 
-        .techs__container {
-            width: calc(100% - 36px);
-            padding: 70px 0;
-        }
+    .techs__container {
+        width: calc(100% - 36px);
+        padding: 70px 0;
+    }
 
-        .techs__title {
-            font-weight: 400;
-            font-size: 18px;
-            line-height: 22px;
-            margin: 0 0 28px 0;
-        }
+    .techs__title {
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 22px;
+        margin: 0 0 28px 0;
+    }
 
-        .techs__line {
-            margin-bottom: 60px;
-            background-color: #000000;
-        }
+    .techs__line {
+        margin-bottom: 60px;
+        background-color: #000000;
+    }
 
-        .techs__subtitle {
-            font-size: 30px;
-            line-height: 36px;
-        }
+    .techs__subtitle {
+        font-size: 30px;
+        line-height: 36px;
+    }
 
-        .techs__text {
-            font-size: 11px;
-            line-height: 16px;
-            margin: 24px auto 50px;
-        }
+    .techs__text {
+        font-size: 11px;
+        line-height: 16px;
+        margin: 24px auto 50px;
+    }
 
-        .techs__grid {
-            width: 90%;
-        }
-    }    
+    .techs__grid {
+        width: 90%;
+    }
+}

@@ -47,29 +47,29 @@
 }
 
 
-@media (max-width: 1279px){
-    .movies-card-list{
+@media (max-width: 1279px) {
+    .movies-card-list {
         width: 708px;
     }
 
-    .movies-card-list__grid{
+    .movies-card-list__grid {
         row-gap: 45px;
         grid-template-columns: repeat(auto-fit, 339px);
     }
-    
+
 }
 
-@media (max-width: 767px){
+@media (max-width: 767px) {
     .movies-card-list {
         width: 300px;
         margin: 40px auto 0;
     }
 
-    .movies-card-list__grid{
+    .movies-card-list__grid {
         row-gap: 39px;
         grid-template-columns: repeat(auto-fit, 300px);
     }
-    
+
     .movies-card-list__button-add {
         width: 300px;
     }
