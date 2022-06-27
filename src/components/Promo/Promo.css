@@ -28,12 +28,11 @@
     font-weight: 400;
     font-size: 50px;
     line-height: 58px;
-    width: 730px;
+    max-width: 730px;
     text-align: center;
     letter-spacing: -0.04em;
     color: #FFFFFF;
-    margin-top: 184px;
-    margin-bottom: 224px;
+    margin: 184px 0 224px 0;
     position: absolute;
     z-index: 2;
 }
@@ -48,9 +47,7 @@
 @media (max-width: 1020px) {
     .promo__container {
         max-width: calc(100% - 88px);
-        flex-direction: column-reverse;
-        align-items: center;
-        padding: 140px 5px 76px;
+       /* padding: 140px 0 76px 0; */
     }
 
     .promo__title {
@@ -70,13 +67,13 @@
 @media (max-width: 425px) {
     .promo__container {
         max-width: calc(100% - 20px);
-        padding: 70px 5px 30px;
+       /* padding: 70px 0 30px 0; */
     }
 
     .promo__title {
         font-size: 31px;
         line-height: 39px;
-        width: 300px;
+        max-width: 300px;
         margin-bottom: 246px;
         margin-top: 207px;
     }

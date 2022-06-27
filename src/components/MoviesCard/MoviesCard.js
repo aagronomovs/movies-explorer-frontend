@@ -22,7 +22,7 @@ export default function MoviesCard() {
                     onClick={onSaveMovie} 
                     className={ isSaved ? 'movies-card__saved-button' : 'movies-card__save-button'}
                     aria-label='добавление фильма'
-                    >Сохранить</button> 
+                    ></button> 
                 </Route>
                 <Route path='/saved-movies'> 
                     <button 
