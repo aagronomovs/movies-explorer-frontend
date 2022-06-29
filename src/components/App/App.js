@@ -9,9 +9,12 @@ import Profile from '../Profile/Profile';
 import Register from '../Register/Register';
 import Login from '../Login/Login';
 import NotFound from '../NotFound/NotFound';
+import InfoToolTip from '../InfoToolTip/InfoToolTip';
 
 
 function App() {
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
+  const [infoTooltipMessage, setInfoTooltipMessage] = React.useState('');
  // const navigate = useNavigate();
   const routes = useLocation();
 
@@ -27,6 +30,10 @@ function App() {
     routes.pathname !== '/signup' &&
     routes.pathname !== '/*';  
 
+  //Закрыть модальное окно  
+  function closeInfoToolTip() {
+    setIsInfoTooltipOpen(false)
+  }  
     
 
   return (
@@ -65,6 +72,7 @@ function App() {
         
       </Switch>
       {isFooter && <Footer />}
+      <InfoToolTip isOpen={isInfoToolTipOpen} onClose={closeInfoToolTip} message={infoTooltipMessage} />
           
     </div>
   );
