@@ -1,0 +1,118 @@
+.navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 183px;
+    margin: 21px 0 0 0;
+}
+
+.button__registration {
+    text-decoration: none;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    color: #FFFFFF;
+    width: 77px;
+    height: 16px;
+}
+
+.button__registration:hover {
+    cursor: pointer;
+    transition: 300ms;
+    opacity: .7;
+}
+
+.button__login {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3DDC84;
+    border: none;
+    border-radius: 3px;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    color: #000000;
+    width: 76px;
+    height: 32px;
+    transition: 300ms;
+}
+
+.button__login:hover {
+    cursor: pointer;
+    transition: 300ms;
+    opacity: .7;
+}
+
+.navigation__menu {
+    margin: 0 auto;
+    display: flex;
+    margin-right: 364px;
+}
+
+.navigation__link {
+    text-decoration: none;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 18px;
+    text-align: right;
+    color: #FFFFFF;
+    margin-right: 16px;
+    transition: 300ms;
+}
+
+.navigation__link:last-of-type {
+    margin-right: 0px;
+}
+
+.navigation__link:hover {
+    opacity: 0.7;
+    cursor: pointer;
+    transition: 300ms;
+}
+
+.button__account {
+    width: 100px;
+    height: 14px;
+    background-color: transparent;
+    border: none;
+    transition: 300ms;
+}
+
+.button__account:hover {
+    cursor: pointer;
+    opacity: .7;
+    transition: 300ms;
+}
+
+@media (max-width: 860px) {
+    .navigation__menu {
+        margin-right: 180px;
+    }
+}
+
+
+@media (max-width: 560px) {
+    .navigation {
+        min-width: 132px;
+        margin-top: 24px;
+    }
+
+    .button__registration {
+        font-size: 10px;
+        width: 64px;
+    }
+
+    .button__login {
+        font-size: 10px;
+        width: 54px;
+        height: 26px;
+    }
+}
