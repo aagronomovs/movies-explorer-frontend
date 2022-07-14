@@ -1,27 +1,93 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './MoviesCardList.css';
-import { Route } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import MoviesCard from '../MoviesCard/MoviesCard';
+import ScreenSize from '../../hooks/useScreenSize';
 
-export default function MoviesCardList() {
+export default function MoviesCardList({
+    moviesList,
+    message,
+    handleDeleteMovie,
+    handleSaveMovie,
+    favouriteList,
+    favouriteMoviesData,
+}) {
+    const routes = useLocation();
+    //число карточек для отображения
+    const [count, setCount] = useState(0);
+    //карточки
+    const [cards, setCards] = useState(0);
+    //ширина экрана
+    const width = ScreenSize();
+    //Добавление карточек при нажатии кнопки "Еще"
+    function addCards() {
+        setCount(count + cards);
+      }
+
+    // Эффект для отображения карточек на странице в зависимости от ширины экрана  
+    useEffect(() => {
+        function getSize() {
+          if (width >= 1280) {
+            setCount(12);
+            setCards(3);
+          }
+          if (width < 1280 && width > 767) {
+            setCount(8);
+            setCards(2);
+          }
+          if (width <= 767) {
+            setCount(5);
+            setCards(2);
+          }
+        }
+        getSize();
+      }, [width]);    
     
     return (
+        
         <div className='movies-card-list'>
-            <Route path='/movies'>
-            <ul className='movies-card-list__grid'>
-                    <MoviesCard />
+            {message && 
+            <p className='movies__message'>{message}</p>
+            }
+            <ul className='movies-card-list__grid'> 
+                   {routes.pathname === '/movies' && 
+                   moviesList && !message
+                   && moviesList.map((item, index) => {
+                    if (index +1 <= count) {
+                        return <MoviesCard
+                            key={index}
+                            movieData={item}
+                            favouriteList={favouriteList}
+                            handleDeleteMovie={handleDeleteMovie}
+                            handleSaveMovie={handleSaveMovie}
+                            />;
+                    } else {
+                        return '';
+                    }
+                   })}
+                   {routes.pathname === '/saved-movies' &&
+                        favouriteMoviesData && !message
+                        && favouriteMoviesData.map((item, index) => {
+                    if (index + 1 <= count) {
+                        return <MoviesCard
+                        movieData={item}
+                        key={index}
+                        handleDeleteMovie={handleDeleteMovie}
+                        favouriteList={favouriteList}
+                        />;
+                    } else {
+                        return '';
+                    }
+                   })}
             </ul>
-            <div className='movies-card-list__wrapper'>
-                <button className='movies-card-list__button-add'>Ещё</button>
-            </div>
-            </Route>
+            {routes.pathname === '/movies' && 
+            count < moviesList.length && !message && (
+                <div className='movies-card-list__wrapper'>
+                        <button className='movies-card-list__button-add' onClick={addCards}>Ещё</button>
+                </div>    
+            )}
 
-            <Route path='/saved-movies'>
-            <ul className='movies-card-list__grid'>
-                <MoviesCard />
-            </ul>
-            <div className='movies-card-list__divider'></div>
-            </Route>
         </div>
     );
 }
+             

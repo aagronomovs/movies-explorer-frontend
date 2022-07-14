@@ -44,6 +44,15 @@
     cursor: pointer;
 }
 
+.search__input-error {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 14px;
+    padding-top: 18px;
+    text-align: center;
+    color: #EE3465;
+}
+
 .search__button {
     width: 100px;
     height: 52px;
