@@ -22,6 +22,6 @@ class MoviesApi {
   export default new MoviesApi({
     url: 'https://api.nomoreparties.co/beatfilm-movies',
     headers: {
-      'content-type': 'application/json',
+      'Content-Type': 'application/json',
     },
   });

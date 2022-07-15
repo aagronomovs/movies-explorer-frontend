@@ -101,7 +101,7 @@
     transition: 300ms;
 }
 
-.login__button:disabled {
+.login__button_disabled {
     background-color: #F9F9F9;
     pointer-events: none;
 }
