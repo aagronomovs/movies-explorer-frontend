@@ -31,6 +31,7 @@ export default function Register({ onRegister }) {
                         <input className='register__input'
                         required
                         type='text'
+                        name='name'
                         id='name'
                         minLength='2'
                         maxLength='30'

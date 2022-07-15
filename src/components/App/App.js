@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Route, Switch, useLocation, useHistory } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Header from '../Header/Header';
 import Main from '../Main/Main';
 import Footer from '../Footer/Footer';
@@ -32,7 +32,7 @@ function App() {
   const [favouriteList, setFavouriteList] = useState([]);
   
   const routes = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const isHeader =
     routes.pathname === '/' ||
@@ -49,12 +49,12 @@ function App() {
   // Регистрация
   function handleRegister({ name, email, password }) {
     setIsLoading(true);
-    MainApi.register({ name, password, email })
+    MainApi.register({ name, email, password })
         .then((userData) => {
             if (userData) {
               setIsInfoTooltipOpen(true);
               setTimeout(() => {
-                history.push('/signin');
+                navigate('/signin');
                 setIsInfoTooltipOpen(false);
                 handleAuthorize({ email, password });
             },
@@ -76,7 +76,7 @@ function App() {
             setLoggedIn(true);
             setDataUser();
             setMoviesData();
-            history.push('/movies');
+            navigate('/movies');
         })
         .catch((error) => {
           console.log(`Ошибка ${error}`);
@@ -90,7 +90,7 @@ function App() {
         .then(() => {
             setCurrentUser([])
             setLoggedIn(false);
-            history.push('/')
+            navigate('/')
             localStorage.clear()
         })
         .catch((error) => {
@@ -105,7 +105,7 @@ function App() {
         .then((res) => {
           if (res) {
             setLoggedIn(true);
-            history.push('/');
+            navigate('/');
           }
         })
         .catch((error) => {
@@ -126,10 +126,10 @@ useEffect(() => {
         .then((userInfo) => {
           setCurrentUser(userInfo);
           localStorage.setItem('currentUser', JSON.stringify(userInfo)) 
-          history.push(routes.pathname);
+          navigate(routes.pathname);
         })
         .catch((error) => {
-          history.push('/signin');
+          navigate('/signin');
           console.log(`Ошибка ${error}`);
         })
         .finally(() => setIsLoading(false))
@@ -281,62 +281,66 @@ useEffect(() => {
       <div className='page'>
         {isHeader && <Header loggedIn={loggedIn} />}
         {isLoading ? (<Preloader />) :
-        (<Switch>
-        <Route exact path='/'>
-           <Main />
-        </Route>
-        <Route exact path='/signup'>
-           <Register 
-              onRegister={handleRegister}
-              messageError={messageError}
-           />  
-         </Route>   
-
-        <Route exact path='/signin'>
-          <Login 
+        (<Routes>
+          <Route path='/' element={
+            <Main />
+          } />
+           
+        
+          <Route exact path='/signup' element={
+            <Register 
+            onRegister={handleRegister}
+            messageError={messageError}
+            />  
+          } />
+           
+          <Route exact path='/signin' element={
+            <Login 
               onLogin={handleAuthorize}
               loggedIn={loggedIn}
               messageError={messageError}
-          />
-        </Route>
-      
-         <ProtectedRoute 
-            loggedIn={loggedIn} 
-            path='/movies'
-            component={Movies}
-            favouriteList={favouriteList}
-            handleSaveMovie={handleSaveMovie}
-            handleDeleteMovie={handleDeleteMovie}
-          ></ProtectedRoute>
-
-         <ProtectedRoute
-            loggedIn={loggedIn}
-            path='/saved-movies'
-            component={SavedMovies}
-            favouriteList={favouriteList}
-            handleSaveMovie={handleSaveMovie}
-            handleDeleteMovie={handleDeleteMovie}
-         ></ProtectedRoute> 
-
-         <ProtectedRoute 
-            loggedIn={loggedIn}
-            path='/profile'
-            component={Profile}
-            handleLogout={handleLogout}
-            changeProfileInfo={changeProfileInfo}
-          ></ProtectedRoute>
-   
-         <Route path='/*'>
-           <NotFound />
-         </Route>
-     
-       </Switch>
-        )}
+            />
+          } />
           
-        {isFooter && <Footer />}
-        {isInfoTooltipOpen && 
+          <Route path='/movies' element={
+            <ProtectedRoute loggedIn={loggedIn}> 
+              <Movies
+                favouriteList={favouriteList}
+                handleSaveMovie={handleSaveMovie}
+                handleDeleteMovie={handleDeleteMovie}
+              />
+            </ProtectedRoute>
+          } />  
+         
+          <Route path='/saved-movies' element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <SavedMovies
+                favouriteList={favouriteList}
+                handleSaveMovie={handleSaveMovie}
+                handleDeleteMovie={handleDeleteMovie}
+              />
+            </ProtectedRoute> 
+          } />
+         
+          <Route path='/profile' element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <Profile
+                handleLogout={handleLogout}
+                changeProfileInfo={changeProfileInfo}
+              />
+            </ProtectedRoute>
+          } />
+         
+          <Route path='/*' element={
+            <NotFound />
+          } />
+     </Routes>
+      )}
+          
+      {isFooter && <Footer />}
+      {isInfoTooltipOpen && 
           <InfoToolTip onClose={closeInfoToolTip} message={infoTooltipMessage} />
-        }  
+      }  
       </div>
       
     </CurrentUser.Provider>
