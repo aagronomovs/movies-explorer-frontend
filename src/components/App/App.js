@@ -3,6 +3,7 @@ import { Route, Switch, useLocation, useHistory } from 'react-router-dom';
 import Header from '../Header/Header';
 import Main from '../Main/Main';
 import Footer from '../Footer/Footer';
+import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 import Movies from '../Movies/Movies';
 import SavedMovies from '../SavedMovies/SavedMovies';
 import Profile from '../Profile/Profile';
@@ -167,7 +168,25 @@ useEffect(() => {
       .catch((error) => {
         console.log(`Ошибка ${error}`);
       })
-  }  
+  }
+  
+  // Изменить данные пользователя
+  function changeProfileInfo({ email, name}) {
+    setIsLoading(true);
+    MainApi.editUserInfo({ email, name })
+      .then((userInfo) => {
+        localStorage.setItem('auth', true)
+        setIsInfoTooltipOpen(true)
+        setCurrentUser(userInfo)
+        localStorage.setItem('currentUser', JSON.stringify(userInfo))
+        setTimeout(() => {
+          setIsInfoTooltipOpen(false)
+      },
+      1000)
+      })
+      .catch((error) => setError(error))
+      .finally(() => setIsLoading(false))
+  }
 
   //Закрыть модальное окно  
   function closeInfoToolTip() {
@@ -266,42 +285,47 @@ useEffect(() => {
         <Route exact path='/'>
            <Main />
         </Route>
-      
-         <Route path='/movies'>
-           <Movies 
-             favouriteList={favouriteList}
-             handleSaveMovie={handleSaveMovie}
-             handleDeleteMovie={handleDeleteMovie}
-           />
-         </Route>
-
-         <Route path='/saved-movies'>
-           <SavedMovies 
-             favouriteList={favouriteList}
-             handleSaveMovie={handleSaveMovie}
-             handleDeleteMovie={handleDeleteMovie}
-           />
-         </Route> 
-
-         <Route path='/profile'>
-           <Profile />
-         </Route>
-
-         <Route path='/signup'>
+        <Route exact path='/signup'>
            <Register 
               onRegister={handleRegister}
               messageError={messageError}
            />  
          </Route>   
 
-         <Route path='/signin'>
-           <Login 
+        <Route exact path='/signin'>
+          <Login 
               onLogin={handleAuthorize}
               loggedIn={loggedIn}
               messageError={messageError}
-           />
-         </Route>
+          />
+        </Route>
+      
+         <ProtectedRoute 
+            loggedIn={loggedIn} 
+            path='/movies'
+            component={Movies}
+            favouriteList={favouriteList}
+            handleSaveMovie={handleSaveMovie}
+            handleDeleteMovie={handleDeleteMovie}
+          ></ProtectedRoute>
 
+         <ProtectedRoute
+            loggedIn={loggedIn}
+            path='/saved-movies'
+            component={SavedMovies}
+            favouriteList={favouriteList}
+            handleSaveMovie={handleSaveMovie}
+            handleDeleteMovie={handleDeleteMovie}
+         ></ProtectedRoute> 
+
+         <ProtectedRoute 
+            loggedIn={loggedIn}
+            path='/profile'
+            component={Profile}
+            handleLogout={handleLogout}
+            changeProfileInfo={changeProfileInfo}
+          ></ProtectedRoute>
+   
          <Route path='/*'>
            <NotFound />
          </Route>
