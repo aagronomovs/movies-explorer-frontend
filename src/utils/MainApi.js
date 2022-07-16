@@ -20,7 +20,7 @@ class MainApi {
       .then(this._checkResponse);
     }
   
-    editUserInfo({name, email}) {
+    editUserInfo(name, email) {
       return fetch(`${this._url}/users/me`, {
         method: 'PATCH',
         credentials: 'include',
@@ -74,7 +74,7 @@ class MainApi {
       .then(this._checkResponse);
     }
 
-    register({name, email, password}) {
+    register(name, email, password) {
       return fetch(`${this._url}/signup`, {
         method: 'POST',
         credentials: 'include',
@@ -88,7 +88,7 @@ class MainApi {
       .then(this._checkResponse);
     }
 
-    authorize({email, password}) {
+    authorize(email, password) {
       return fetch(`${this._url}/signin`, {
         method: 'POST',
         credentials: 'include',

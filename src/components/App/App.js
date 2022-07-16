@@ -47,16 +47,16 @@ function App() {
     routes.pathname !== '/*'; 
   
   // Регистрация
-  function handleRegister({ name, email, password }) {
+  function handleRegister(name, email, password) {
     setIsLoading(true);
-    MainApi.register({ name, email, password })
+    MainApi.register(name, email, password)
         .then((userData) => {
             if (userData) {
               setIsInfoTooltipOpen(true);
               setTimeout(() => {
                 navigate('/signin');
                 setIsInfoTooltipOpen(false);
-                handleAuthorize({ email, password });
+                handleAuthorize(email, password);
             },
                 500)
             }
@@ -66,9 +66,9 @@ function App() {
   } 
 
   // авторизация
-  function handleAuthorize({ email, password }) {
+  function handleAuthorize(email, password) {
     setIsLoading(true)
-    MainApi.authorize({ email, password })
+    MainApi.authorize(email, password)
         .then((userInfo) => {
             localStorage.setItem('auth', true)
             setCurrentUser(userInfo)
