@@ -8,7 +8,7 @@ export default function Navigation(loggedIn) {
    
     return ( 
       <div className='navigation'>
-            {loggedIn ? (
+            {!loggedIn ? (
                 <>
                     <Link to='/signup' className='button__registration'>Регистрация</Link>
                     <Link to='/signin' className='button__login'>Войти</Link>
