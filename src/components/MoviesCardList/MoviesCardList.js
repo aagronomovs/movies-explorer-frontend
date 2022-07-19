@@ -9,8 +9,7 @@ export default function MoviesCardList({
     message,
     handleDeleteMovie,
     handleSaveMovie,
-    favouriteList,
-    favouriteMoviesData,
+    favouriteList,    
 }) {
     const routes = useLocation();
     //число карточек для отображения
@@ -19,6 +18,7 @@ export default function MoviesCardList({
     const [cards, setCards] = useState(0);
     //ширина экрана
     const width = ScreenSize();
+    
     //Добавление карточек при нажатии кнопки "Еще"
     function addCards() {
         setCount(count + cards);
@@ -26,6 +26,7 @@ export default function MoviesCardList({
 
     // Эффект для отображения карточек на странице в зависимости от ширины экрана  
     useEffect(() => {
+      if (routes.pathname === '/movies') {
         function getSize() {
           if (width >= 1280) {
             setCount(12);
@@ -41,8 +42,25 @@ export default function MoviesCardList({
           }
         }
         getSize();
-      }, [width]);    
-    
+      }
+      }, [width]); 
+      
+    // cравнение сохраненных фильмов
+    function isSaved(arr, movie) {
+      return arr.find((item) => {
+        return item.movieId === (movie.id || movie.movieId);
+      });
+    }
+
+     // изменяем отображаемый массив фильмов в зависимости от ширины экрана
+  //useEffect(() => {
+    //if (moviesList.length) {
+    //  const res = moviesList.filter((item, i) => i < cardsShowDetails.total);
+    //  setShowMovieList(res);
+   // }
+ // }, [moviesList, cardsShowDetails.total]); 
+  
+  
     return (
         
         <div className='movies-card-list'>
@@ -50,14 +68,12 @@ export default function MoviesCardList({
             <p className='movies__message'>{message}</p>
             }
             <ul className='movies-card-list__grid'> 
-                   {routes.pathname === '/movies' && 
-                   moviesList && !message
-                   && moviesList.map((item, index) => {
-                    if (index +1 <= count) {
+                   {moviesList.map(movie => {
+                    if (movie +1 <= count) {
                         return <MoviesCard
-                            key={index}
-                            movieData={item}
-                            favouriteList={favouriteList}
+                            key={movie.id || movie._id}
+                            movie={movie}
+                            saved={isSaved(favouriteList, movie)}
                             handleDeleteMovie={handleDeleteMovie}
                             handleSaveMovie={handleSaveMovie}
                             />;
@@ -65,20 +81,7 @@ export default function MoviesCardList({
                         return '';
                     }
                    })}
-                   {routes.pathname === '/saved-movies' &&
-                        favouriteMoviesData && !message
-                        && favouriteMoviesData.map((item, index) => {
-                    if (index + 1 <= count) {
-                        return <MoviesCard
-                        movieData={item}
-                        key={index}
-                        handleDeleteMovie={handleDeleteMovie}
-                        favouriteList={favouriteList}
-                        />;
-                    } else {
-                        return '';
-                    }
-                   })}
+                   
             </ul>
             {routes.pathname === '/movies' && 
             count < moviesList.length && !message && (

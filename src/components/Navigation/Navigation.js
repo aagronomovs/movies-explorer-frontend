@@ -4,7 +4,7 @@ import './Navigation.css';
 import profile_icon from '../../images/profile_icon.svg';
 
 
-export default function Navigation(loggedIn) {
+export default function Navigation({loggedIn}) {
    
     return ( 
       <div className='navigation'>

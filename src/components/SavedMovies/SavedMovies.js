@@ -1,84 +1,105 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './SavedMovies.css';
 import MoviesCardList from '../MoviesCardList/MoviesCardList';
 import SearchForm from '../SearchForm/SearchForm';
+import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 
 export default function SavedMovies({
     favouriteList,
     handleSaveMovie,
     handleDeleteMovie,
 }) {
-    const [searchPerform, setSearchPerform] = useState('');
-    const [checkboxActive, setCheckboxActive] = useState(false);
+    const currentUser = useContext(CurrentUserContext);
+
+    const [shortMovies, setShortMovies] = useState(false);//состояние чекбокса
+    const [showedMovies, setShowedMovies] = useState(favouriteList); // показываемывые фильмы
+    const [filteredMovies, setFilteredMovies] = useState(showedMovies); // отфильтрованные фильтры по чекбоксу
+    const [notFound, setNotFound] = useState(false); //фильмы не найдены, карточки не отображаются
     const [message, setMessage] = useState('');
 
-    const [favouriteMoviesList, setFavouriteMoviesList] = useState([]);    
-    const [savedListRendering, setSavedListRendering] = useState([]);
-    const [shortMoviesListSaved, setShortMoviesListSaved] = useState([]);
-    
+        
     // Установка чекбокса для короткометражек
-    function handleCheckboxChange(isActive) {
-        setMessage('');
-        setCheckboxActive(isActive)
+    function handleCheckboxChange() {
+        if (!shortMovies) {
+            setShortMovies(true);
+            localStorage.setItem(`${currentUser.email} - shortSavedMovies`, true);
+            setShowedMovies(filterShortMovies(filteredMovies));
+            filterShortMovies(filteredMovies).length === 0 ? setNotFound(true) : setNotFound(false);
+          } else {
+            setShortMovies(false);
+            localStorage.setItem(`${currentUser.email} - shortSavedMovies`, false);
+            filteredMovies.length === 0 ? setNotFound(true) : setNotFound(false);
+            setShowedMovies(filteredMovies);
+          }
+    }
+
+    // фильтрация по длительности/короткометражки
+    function filterShortMovies(movies) {
+        return movies.filter(movie => movie.duration <= 40);
+    }
+
+    // фильтрация по запросу
+    function filterMovies(movies, search, filterCheckbox) {
+        const moviesByUserSearch = movies.filter((movie) => {
+        const movieRu = String(movie.nameRU).toLowerCase().trim();
+        const movieEn = String(movie.nameEN).toLowerCase().trim();
+        const userMovie = search.toLowerCase().trim();
+        return movieRu.indexOf(userMovie) !== -1 || movieEn.indexOf(userMovie) !== -1;
+        });
+    
+        if (filterCheckbox) {
+        return filterShortMovies(moviesByUserSearch);
+        } else {
+        return moviesByUserSearch;
+        }
     }
 
     // Сабмит формы поиска
-    function handleSubmitSearchForm(search) {
-        setMessage('');
-        setSearchPerform(search);
-    }
-
-    // Поиск фильмов
-    useEffect(() => {
-        if (searchPerform) {
-            const newMovieList = JSON.parse(localStorage.getItem('savedMoviesList')).filter((movie) =>
-                movie.nameRU.toLowerCase().indexOf(searchPerform.toLowerCase()) > -1)
-            if (newMovieList.length) {
-                setSavedListRendering(newMovieList)
-            } else {
-                setMessage('Ничего не найдено')
-                setSavedListRendering([])
-            }
+    function handleSubmitSearchForm(input) {
+        const moviesList = filterMovies(favouriteList, input, shortMovies);
+        if (moviesList.length === 0) {
+          setNotFound(true);
+          setMessage('Ничего не найдено.');
         } else {
-            setSavedListRendering(favouriteMoviesList)
-        } 
-        favouriteMoviesList.length ? setMessage('') : setMessage('Ничего не найдено')        
-    }, [searchPerform, favouriteMoviesList, checkboxActive])
+          setNotFound(false);
+          setFilteredMovies(moviesList);
+          setShowedMovies(moviesList);
+        }
+    }
 
     // Эффект обработки чекбокса при выборе короткометражек
     useEffect(() => {
-        if (checkboxActive && savedListRendering.length) {
-            const newShortMovieList = savedListRendering.filter(movie => movie.duration <= 40)
-            newShortMovieList.length ?
-            setShortMoviesListSaved(newShortMovieList) : setMessage('Ничего не найдено') && setSavedListRendering([])
+        if (localStorage.getItem(`${currentUser.email} - shortSavedMovies`) === 'true') {
+          setShortMovies(true);
+          setShowedMovies(filterShortMovies(favouriteList));
         } else {
-            setShortMoviesListSaved([])
+          setShortMovies(false);
+          setShowedMovies(favouriteList);
         }
-    }, [savedListRendering, checkboxActive])
+      }, [favouriteList, currentUser]);
+    
+      useEffect(() => {
+        setFilteredMovies(favouriteList);
+        favouriteList.length !== 0 ? setNotFound(false) : setNotFound(true);
+      }, [favouriteList]);
 
-    //  отрисовка прошлого поиска при возврате
-    useEffect(() => {
-        localStorage.savedMoviesList &&  setFavouriteMoviesList(JSON.parse(localStorage.getItem('savedMoviesList')))
-    }, [handleSaveMovie, handleDeleteMovie, checkboxActive])
-
+    
 
     return (
         <div className='saved-movies'>
             <SearchForm
                 handleCheckboxChange={handleCheckboxChange}
                 handleSubmitSearchForm={handleSubmitSearchForm}
+                shortMovies={shortMovies}
             />
+            {!notFound && (
             <MoviesCardList 
                 favouriteList={favouriteList}
-                favouriteMoviesData={
-                    shortMoviesListSaved.length ?
-                        shortMoviesListSaved
-                        :
-                        savedListRendering   
-                }
+                moviesList={showedMovies}
                 handleDeleteMovie={handleDeleteMovie}
                 message={message}
             />
+            )}
         </div>
     );
 }

@@ -11,9 +11,10 @@ import Register from '../Register/Register';
 import Login from '../Login/Login';
 import NotFound from '../NotFound/NotFound';
 import InfoToolTip from '../InfoToolTip/InfoToolTip';
-import { CurrentUser } from '../../contexts/CurrentUserContext';
-import MainApi from '../../utils/MainApi';
+import { CurrentUserContext } from '../../contexts/CurrentUserContext';
+import mainApi from '../../utils/MainApi';
 import MoviesApi from '../../utils/MoviesApi';
+import * as auth from '../../utils/auth';
 import Preloader from '../Preloader/Preloader';
 
 
@@ -21,14 +22,15 @@ function App() {
   // Popup
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
   const [infoTooltipMessage, setInfoTooltipMessage] = useState('');
+  
   // CurrentUser
-  const [currentUser, setCurrentUser] = useState();
+  const [currentUser, setCurrentUser] = useState({email: '', name: '' });
   // Preloader
   const [isLoading, setIsLoading] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
 
-  const [messageError, setMessageError] = useState('');
-  const [error, setError] = useState('');
+  //const [messageError, setMessageError] = useState('');
+  //const [error, setError] = useState('');
   const [favouriteList, setFavouriteList] = useState([]);
   
   const routes = useLocation();
@@ -49,34 +51,43 @@ function App() {
   // Регистрация
   function handleRegister(name, email, password) {
     setIsLoading(true);
-    MainApi.register(name, email, password)
-        .then((userData) => {
-            if (userData) {
+    auth.register(name, email, password)
+        .then(() => {
+                              
               setIsInfoTooltipOpen(true);
               setTimeout(() => {
                 navigate('/signin');
                 setIsInfoTooltipOpen(false);
                 handleAuthorize(email, password);
+                
             },
-                500)
-            }
+                3000)
         })
-        .catch((error) => setError(error))
+        .catch((error) => {
+          console.log(`Ошибка ${error}`);
+          setIsInfoTooltipOpen(true);
+          setInfoTooltipMessage('Что-то пошло не так! Проверьте правильность введенных данных');
+          setTimeout(() => {
+            closeInfoToolTip();
+          }, 3000);
+        })
         .finally(() => setIsLoading(false))
   } 
 
   // авторизация
   function handleAuthorize(email, password) {
-    setIsLoading(true)
-    MainApi.authorize(email, password)
-        .then((userInfo) => {
-            localStorage.setItem('auth', true)
-            setCurrentUser(userInfo)
-            localStorage.setItem('currentUser', JSON.stringify(userInfo))
-            setLoggedIn(true);
-            setDataUser();
-            setMoviesData();
-            navigate('/movies');
+    setIsLoading(true);
+    auth.authorize(email, password)
+        .then((jwt) => {
+          if (jwt.token) {
+          setLoggedIn(true);
+          localStorage.setItem('jwt', jwt.token);
+         // setCurrentUser(res);
+        
+          //handleTokenCheck();
+          
+          navigate('/movies');
+        }
         })
         .catch((error) => {
           console.log(`Ошибка ${error}`);
@@ -86,60 +97,39 @@ function App() {
 
   // выйти из аккаунта
   function handleLogout() {
-    MainApi.logout()
-        .then(() => {
-            setCurrentUser([])
+            setCurrentUser({ })
+            localStorage.removeItem('jwt');
+            localStorage.clear();
+            navigate('/');
             setLoggedIn(false);
-            navigate('/')
-            localStorage.clear()
-        })
-        .catch((error) => {
-          console.log(`Ошибка ${error}`);
-        });
   }
 
   // Проверка наличия токена
-  function handleTokenCheck() {
-    if (localStorage.getItem('token')) {
-      MainApi.checkToken(localStorage.getItem('token'))
-        .then((res) => {
-          if (res) {
-            setLoggedIn(true);
-            navigate('/');
-          }
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
-    }
-  };
+ // function handleTokenCheck() {
+   //const token = localStorage.getItem('jwt');
+   //if (token) {
+    //   auth.checkToken(token)
+    //  .then((res) => {
+    //  if (res) {
+     //   setLoggedIn(true);
+     //   navigate('/movies');
+     //   setCurrentUser({ name: res.name, email: res.email });
+      //}
+    //})
+  //.catch((error) => {
+  //  console.log(`${error}`);
+ //});
+//}
+//};
 
-  useEffect(() => {
-    handleTokenCheck()
-  }, []);
+ //useEffect(() => {
+ // handleTokenCheck();
+ //}, [loggedIn]);
 
-  // Проверка авторизации на сайте
-useEffect(() => {
-  if (localStorage.auth) {
-      setLoggedIn(true);
-      MainApi.getUserInfo()
-        .then((userInfo) => {
-          setCurrentUser(userInfo);
-          localStorage.setItem('currentUser', JSON.stringify(userInfo)) 
-          navigate(routes.pathname);
-        })
-        .catch((error) => {
-          navigate('/signin');
-          console.log(`Ошибка ${error}`);
-        })
-        .finally(() => setIsLoading(false))
-  }  
-   // eslint-disable-next-line react-hooks/exhaustive-deps           
-}, []);
-
+  
 // Получение карточек с фильмами
   useEffect(() => {
-      MainApi.getMovies()
+      mainApi.getMovies()
       .then((cardsInfo) => {
         setFavouriteList(cardsInfo);
         localStorage.setItem('savedMoviesList', JSON.stringify(cardsInfo))
@@ -153,130 +143,166 @@ useEffect(() => {
           .then((cardsInfo) => {
               sessionStorage.setItem('initialMoviesList', JSON.stringify(cardsInfo))
           })
-          .catch((error) => setError(error))
+          .catch((error) => console.log(`Ошибка ${error}`))
           .finally(() => setIsLoading(false))
           // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localStorage.savedMoviesList]);
 
+//Получить данные пользователя (проверка токена и авторизация)
+useEffect(() => {
+  const jwt = localStorage.getItem('jwt');
+  if (jwt) {
+    setIsLoading(true);
+    mainApi.getUserInfo()
+      .then((data) => {
+        console.log(data);
+        setLoggedIn(true);
+        setCurrentUser(data);
+        navigate(routes.pathname);
+      })
+      .catch((error) => console.log(`${error}`))
+      .finally(() => setIsLoading(false))
+  }
+}, []);
 
-  // Получить данные пользователя
-  function setDataUser() {
-    MainApi.getUserInfo()
-      .then((userInfo) => {
-        setCurrentUser(userInfo);
+//Получить данные пользователя
+useEffect(() => {
+  if (loggedIn) {
+    setIsLoading(true);
+    mainApi.getUserInfo()
+      .then(res => setCurrentUser(res))
+      .catch((error) => console.log(`${error}`))
+      .finally(() => setIsLoading(false));
+  }
+}, [loggedIn]);
+
+
+ 
+  // Изменить данные пользователя
+  function changeProfileInfo({name, email}) {
+    setIsLoading(true);
+    mainApi.editUserInfo({name, email} )
+      .then((data) => {
+        setCurrentUser(data);   
+        setIsInfoTooltipOpen(true);
+            
+        setInfoTooltipMessage('Ваши данные изменены');
+        setTimeout(() => {
+          setIsInfoTooltipOpen(false);
+      },
+      3000)
       })
       .catch((error) => {
-        console.log(`Ошибка ${error}`);
+        setIsInfoTooltipOpen(true);
+        setInfoTooltipMessage('Что-то пошло не так! Проверьте правильность введенных данных');
+        closeInfoToolTip();
+        console.log(`${error}`);
       })
-  }
-  
-  // Изменить данные пользователя
-  function changeProfileInfo({ email, name}) {
-    setIsLoading(true);
-    MainApi.editUserInfo({ email, name })
-      .then((userInfo) => {
-        localStorage.setItem('auth', true)
-        setIsInfoTooltipOpen(true)
-        setCurrentUser(userInfo)
-        localStorage.setItem('currentUser', JSON.stringify(userInfo))
-        setTimeout(() => {
-          setIsInfoTooltipOpen(false)
-      },
-      1000)
-      })
-      .catch((error) => setError(error))
-      .finally(() => setIsLoading(false))
+      .finally(() => setIsLoading(false));
   }
 
   //Закрыть модальное окно  
   function closeInfoToolTip() {
     setIsInfoTooltipOpen(false);
-    setMessageError('');
+    
   }
 
   // Обработка ошибок
-  useEffect(() => {
-    if (error) {
-      setMessageError(`Что то пошло не так ${error}!`);
-      setIsInfoTooltipOpen(true);
-    }
-  }, [error]);
+ // useEffect(() => {
+ //   if (error) {
+  //    setMessageError(`Что-то пошло не так ${error}!`);
+  //    setIsInfoTooltipOpen(true);
+  //  }
+  //}, [error]);
   
-  // Запрос карточек с фильмами
+  // Запрос карточек с сохраненными фильмами
   useEffect(() => {
-    MainApi.getMovies()
-    .then((cardsInfo) => {
-      setFavouriteList(cardsInfo);
-      localStorage.setItem('savedMoviesList', JSON.stringify(cardsInfo))
-    })
+    if (loggedIn && currentUser) {
+    mainApi.getMovies()
+      .then((data) => {
+      const userMoviesList = data.filter(m => m.owner === currentUser._id);
+      setFavouriteList(userMoviesList);
+  //    setFavouriteList(cardsInfo);
+  //    localStorage.setItem('savedMoviesList', JSON.stringify(cardsInfo))
+   })
     .catch((error) => {
       console.log(`Ошибка ${error}`);
     })
-    .finally(() => setIsLoading(false))
-    setIsLoading(true)
-    MoviesApi.getMovies()
-      .then((cardsInfo) => {
-        sessionStorage.setItem('initialMoviesList', JSON.stringify(cardsInfo))
-      })
-      .catch((error) => setError(error))
-      .finally(() => setIsLoading(false))
-  }, [localStorage.savedMoviesList]) 
+  //  .finally(() => setIsLoading(false))
+  //  setIsLoading(true)
+  //  MoviesApi.getMovies()
+  //    .then((cardsInfo) => {
+  //      sessionStorage.setItem('initialMoviesList', JSON.stringify(cardsInfo))
+  //    })
+   //   .catch((error) => setError(error))
+   //   .finally(() => setIsLoading(false))
+  }
+  }, [currentUser, loggedIn]); 
 
   // Получить данные карточек с фильмами
-  function setMoviesData() {
-    setIsLoading(true);
-    MainApi.getMovies()
-      .then((cardsInfo) => {
-        setFavouriteList(cardsInfo);
-        localStorage.setItem('savedMoviesList', JSON.stringify(cardsInfo))
-        if (!sessionStorage.initialMoviesList) {
-          MoviesApi.getMovies()
-            .then((cardsInfo) => {
-              sessionStorage.setItem('initialMoviesList', JSON.stringify(cardsInfo))
-            })
-            .catch((error) => setError(error))
-        }
-      })
-      .catch((error) => {
-        console.log(`Ошибка ${error}`)
-      })
-      .finally(() => setIsLoading(false))
-  }
+  //function setMoviesData() {
+  //  setIsLoading(true);
+  //  mainApi.getMovies()
+  //    .then((cardsInfo) => {
+  //      setFavouriteList(cardsInfo);
+   //     localStorage.setItem('savedMoviesList', JSON.stringify(cardsInfo))
+    //    if (!sessionStorage.initialMoviesList) {
+    //      MoviesApi.getMovies()
+     //       .then((cardsInfo) => {
+      //        sessionStorage.setItem('initialMoviesList', JSON.stringify(cardsInfo))
+        //    })
+         //   .catch((error) => console.log(`Ошибка ${error}`))
+       // }
+     // })
+  //    .catch((error) => {
+  //      console.log(`Ошибка ${error}`)
+   //   })
+   //   .finally(() => setIsLoading(false))
+ // }
 
   // Добавить фильм в избранное
-  function handleSaveMovie(movie) {
+  function handleSaveMovie(movieData) {
     setIsLoading(true);
-    MainApi.saveMovie(movie)
+    mainApi.saveMovie(movieData)
       .then((savedMovie) => {
         setFavouriteList([...favouriteList, savedMovie]);
-        let favouriteMovies = JSON.parse(localStorage.getItem('savedMoviesList'))
-        favouriteMovies = favouriteMovies.concat(savedMovie)
-        localStorage.setItem('savedMoviesList', favouriteMovies)
+       // let favouriteMovies = JSON.parse(localStorage.getItem('savedMoviesList'))
+       // favouriteMovies = favouriteMovies.concat(savedMovie)
+       // localStorage.setItem('savedMoviesList', favouriteMovies)
       })
-      .catch((error) => setError(error))
+      .catch((error) => console.log(`Ошибка ${error}`))
       .finally(() => setIsLoading(false))
   }
 
   // Удалить фильм из избранного
-  function handleDeleteMovie(movie) {
-    const id = movie.movieId || movie.id;
-    const movieId = movie._id || favouriteList.find((item) => item.movieId === movie.id)._id;
-    console.log(id);
-    MainApi.deleteMovie(movieId)
-      .then((deleteMovie) => {
-        setFavouriteList([...favouriteList, deleteMovie]);
-        let favouriteMovies = JSON.parse(localStorage.getItem('savedMoviesList'))
-        const index = favouriteMovies.findIndex(item => item.movieId === deleteMovie.movieId)
-        favouriteMovies.splice(index, 1) 
-        localStorage.setItem('savedMoviesList', JSON.stringify(favouriteMovies))
+  function handleDeleteMovie(movieData) {
+    //const id = movieData.movieId || movieData.id;
+    //const movieId = movieData._id || favouriteList.find((item) => item.movieId === movieData.id)._id;
+    //console.log(id);
+    const savedMovie = favouriteList.find((item) => item.movieId === movieData.id || item.movieId === movieData.id)
+    mainApi.deleteMovie(savedMovie._id)
+      .then(() => {
+        const newMoviesList = favouriteList.filter(m => {
+          if (movieData.id === m.movieId || movieData.movieId === m.movieId) {
+            return false;
+          } else {
+            return true;
+          }
+        });
+        setFavouriteList(newMoviesList);
+        //setFavouriteList([...favouriteList, deleteMovie]);
+        //let favouriteMovies = JSON.parse(localStorage.getItem('savedMoviesList'))
+        //const index = favouriteMovies.findIndex(item => item.movieId === deleteMovie.movieId)
+       // favouriteMovies.splice(index, 1) 
+       // localStorage.setItem('savedMoviesList', JSON.stringify(favouriteMovies))
         })
-        .catch((error) => setError(error))
+        .catch((error) => console.log(`Ошибка ${error}`))
   }
 
     
 
   return (
-    <CurrentUser.Provider value={currentUser}>
+    <CurrentUserContext.Provider value={currentUser}>
       
       <div className='page'>
         {isHeader && <Header loggedIn={loggedIn} />}
@@ -290,7 +316,7 @@ useEffect(() => {
           <Route exact path='/signup' element={
             <Register 
             onRegister={handleRegister}
-            messageError={messageError}
+            
             />  
           } />
            
@@ -298,7 +324,7 @@ useEffect(() => {
             <Login 
               onLogin={handleAuthorize}
               loggedIn={loggedIn}
-              messageError={messageError}
+              
             />
           } />
           
@@ -343,7 +369,7 @@ useEffect(() => {
       }  
       </div>
       
-    </CurrentUser.Provider>
+    </CurrentUserContext.Provider>
   );
 }
 

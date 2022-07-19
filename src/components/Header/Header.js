@@ -17,12 +17,12 @@ export default function Header({loggedIn}) {
                         </Link>
                         {!loggedIn ? ( 
                             <div className='header__navlink'>
-                            <Navigation />
+                            <Navigation loggedIn={!loggedIn} />
                             </div>
                         ) : (
                             <>
                             <div className='header__navlink header__navlink__visible'>
-                                <Navigation />
+                                <Navigation loggedIn={loggedIn} />
                             </div>
                            <BurgerMenu /> 
                            </>    

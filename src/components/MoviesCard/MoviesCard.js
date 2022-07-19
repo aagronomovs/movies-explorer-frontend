@@ -4,35 +4,32 @@ import { useLocation } from 'react-router-dom';
 
 
 export default function MoviesCard({
-    movieData,
+    movie,
     handleSaveMovie,
     handleDeleteMovie,
-    favouriteList
+    isSaved
 }) {
     const routes = useLocation();
-    const isSaved = () => {
-        return favouriteList.some((item) => item.movieId === movieData.id);
-    }
-
-    const transformDuration = () => {
-        return `${Math.floor(movieData.duration / 60)}ч ${movieData.duration % 60}м`;
-    };
-
+    
     function handleSaveClick() {
-        handleSaveMovie(movieData);
+        handleSaveMovie(movie);
     }
     
     function handleDeleteClick() {
-        handleDeleteMovie(movieData);
+        handleDeleteMovie(movie);
     }
 
-    const url =
-    movieData.image.url === undefined
-        ? movieData.image
-        : `https://api.nomoreparties.co${movieData.image.url}`;
+    const transformDuration = () => {
+        return `${Math.floor(movie.duration / 60)}ч ${movie.duration % 60}м`;
+    };
 
-    const trailer =
-    movieData.trailer === undefined ? movieData.trailerLink : movieData.trailer;
+    //const url =
+    //movie.image.url === undefined
+    //    ? movie.image
+    //    : `https://api.nomoreparties.co${movie.image.url}`;
+
+    //const trailer =
+    //movie.trailer === undefined ? movie.trailerLink : movie.trailer;
       
 
     return (
@@ -48,21 +45,23 @@ export default function MoviesCard({
                     ) :
                     (
                         <button
-                        onClick={isSaved ? handleDeleteClick : handleSaveClick} 
-                        className={ isSaved ? 'movies-card__saved-button' : 'movies-card__save-button'}
+                        onClick={isSaved() ? handleDeleteClick : handleSaveClick} 
+                        //className={ isSaved ? 'movies-card__saved-button' : 'movies-card__save-button'}
+                        className={`movies-card__save-button ${
+                            isSaved() && `movies-card__saved-button`}`}
                         aria-label='добавление фильма'
                         ></button>   
                     )
                 }
-                    <a href={trailer} target='_blank' rel='noopener noreferrer'>
-                        <img src={url}
-                        alt={movieData.nameRU}
+                    <a href={movie.trailerLink} target='_blank' rel='noopener noreferrer'>
+                        <img src={movie.image}
+                        alt={movie.nameRU}
                         className='movies-card__image' />
                     </a>
                 </div>
                
             <div className='movies-card__box'>
-                <h2 className='movies-card__title'>{movieData.nameRU}</h2>
+                <h2 className='movies-card__title'>{movie.nameRU}</h2>
                 <p className='movies-card__time'>{transformDuration()}</p>
             </div>
         </li>

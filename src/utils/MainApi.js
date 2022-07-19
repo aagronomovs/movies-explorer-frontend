@@ -1,7 +1,7 @@
 class MainApi {
-    constructor(config) {
-      this._url = config.url;
-      this._headers = config.headers;
+    constructor(url) {
+      this._url = url;
+      
     }
   
     _checkResponse(res) {
@@ -15,19 +15,25 @@ class MainApi {
       return fetch(`${this._url}/users/me`, {
         method: 'GET',
         credentials: 'include',
-        headers: this._headers,
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: localStorage.getItem('jwt'),
+        },
       })
       .then(this._checkResponse);
     }
   
-    editUserInfo(name, email) {
+    editUserInfo(data) {
       return fetch(`${this._url}/users/me`, {
         method: 'PATCH',
         credentials: 'include',
-        headers: this._headers,
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: localStorage.getItem('jwt'),
+        },
         body: JSON.stringify({
-          name: name,
-          email: email,
+          name: data.name,
+          email: data.email,
         }),
       })
       .then(this._checkResponse);
@@ -37,16 +43,23 @@ class MainApi {
       return fetch(`${this._url}/movies`, {
         method: 'GET',
         credentials: 'include',
-        headers: this._headers,
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: localStorage.getItem('jwt'),
+        },
       })
       .then(this._checkResponse);
     }
-  
+    
+    //сохранить фильм в избранное
     saveMovie(movie) {
       return fetch(`${this._url}/movies`, {
         method: 'POST',
         credentials: 'include',
-        headers: this._headers,
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: localStorage.getItem('jwt'),
+        },
         body: JSON.stringify({
           country: movie.country,
           director: movie.director,
@@ -64,67 +77,20 @@ class MainApi {
       .then(this._checkResponse);
     }
   
+    //удалить фильм из избранного
     deleteMovie(movieId) {
-      this._id = movieId;
-      return fetch(`${this._url}/movies/${this._id}`, {
+      //this._id = movieId;
+      return fetch(`${this._url}/movies/${movieId}`, {
         method: 'DELETE',
         credentials: 'include',
-        headers: this._headers,
+        headers: { authorization: localStorage.getItem('jwt') }
       })
       .then(this._checkResponse);
     }
-
-    register(name, email, password) {
-      return fetch(`${this._url}/signup`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: this._headers,
-        body: JSON.stringify({ 
-          name: name,
-          email: email,
-          password: password
-        }),
-      })
-      .then(this._checkResponse);
-    }
-
-    authorize(email, password) {
-      return fetch(`${this._url}/signin`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: this._headers,
-        body: JSON.stringify({ 
-          email: email,
-          password: password
-        }),
-      })
-      .then(this._checkResponse);
-    }
-
-    logout() {
-      return fetch(`${this._url}/signout`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: this._headers,
-      })
-      .then(this._checkResponse);
-    }
-
-    checkToken(token) {
-      return fetch(`${this._url}/users/me`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: this._headers,
-      })
-      .then(this._checkResponse);
-    }
-
-
   }
   
-  export default new MainApi({
-    url: 'https://api.movies.agronomovs.nomoredomains.xyz',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+  const mainApi = new MainApi({
+    url: 'https://api.movies.agronomovs.nomoredomains.xyz',  
   });
+
+  export default mainApi;

@@ -1,59 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import './SearchForm.css';
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox';
 import { useLocation } from 'react-router-dom';
+import { CurrentUserContext } from '../../contexts/CurrentUserContext';
+import useFormValidation from '../../hooks/useFormValidation';
 
 export default function SearchForm({ 
     handleCheckboxChange,
+    shortMovies,
     handleSubmitSearchForm
  }) {
+    const currentUser  = useContext(CurrentUserContext);
     const routes = useLocation();
-    // Состояние поиска
-    const search = localStorage.getItem('search');
-    const [searchPerform, setSearchPerform] = useState(search && routes.pathname === '/movies' ? search : '');
-
-    //Стейт состояния переключателя чекбокса
-    const [isActive, setIsActive] = useState(false);
-    const checkboxStatus = JSON.parse(localStorage.getItem('checkboxStatus'));
-
-    // Изменение инпута
-    function handleChangeInput(e) {
-        setSearchPerform(e.target.value)
-        if (routes.pathname === '/movies') {
-            localStorage.setItem('search', e.target.value);
-        }
-    }
-
-    // Поведение чекбокса
-    function moveCheckbox() {
-        if (routes.pathname === '/movies' && isActive === false) {
-            localStorage.setItem('checkBoxStatus', true);
-            setIsActive(true);
-            handleCheckboxChange(true)
-        } else if (routes.pathname === '/movies' && isActive === true) {
-            localStorage.setItem('checkBoxStatus', false);
-            setIsActive(false);
-            handleCheckboxChange(false)
-        } else if (routes.pathname === '/saved-movies' && isActive === false) {
-            setIsActive(true);
-            handleCheckboxChange(true)
-        } else if (routes.pathname === '/saved-movies' && isActive === true ) {
-            setIsActive(false);
-            handleCheckboxChange(false)
-        }
-}
-
+    const { values, handleChange, errors, isValid, setIsValid, setErrors} = useFormValidation();
+    
+    //состояние инпута из локального хранилища
     useEffect(() => {
-        routes.pathname === '/movies' &&
-            handleCheckboxChange(checkboxStatus);
-    }, []);
+        if (routes.pathname === '/movies' && localStorage.getItem(`${currentUser.email} - movieSearch`)) {
+            const searchValue = localStorage.getItem(`${currentUser.email} - movieSearch`);
+            values.search = searchValue;
+            setIsValid(true);
+        }
+    }, [currentUser]);
 
 
     //сабмит формы
     function handleSubmit(e) {
         e.preventDefault();
-        handleSubmitSearchForm(search);
+        isValid ? handleSubmitSearchForm(values.search) : setErrors('Нужно ввести ключевое слово.');
     }
+
+    //useEffect(() => {
+    //    setErrors('');
+    //}, [isValid]);
 
     return (
         <section className='search'>
@@ -71,22 +50,20 @@ export default function SearchForm({
                             name='search'
                             minLength='2'
                             maxLength='60'
-                            value={searchPerform} 
-                            onChange={handleChangeInput}
+                            value={values.search || ''} 
+                            onChange={handleChange}
                             placeholder='Фильм' 
                             type="text"
                             required
                         />
+                        <span className='search__error'>{errors.search}</span>
                         <button className='search__button' type='submit'>Поиск</button>
                     </div>
                 </form>
                 
                 <FilterCheckbox 
-                    moveCheckbox={moveCheckbox}
-                    checkboxStatus={
-                        routes.pathname === '/movies' ?
-                        checkboxStatus :
-                        isActive }
+                    shortMovies={shortMovies}
+                    handleCheckboxChange={handleCheckboxChange}
                 />
             </div>
             <div className='search__line'></div>
