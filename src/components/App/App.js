@@ -13,7 +13,6 @@ import NotFound from '../NotFound/NotFound';
 import InfoToolTip from '../InfoToolTip/InfoToolTip';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import mainApi from '../../utils/MainApi';
-import MoviesApi from '../../utils/MoviesApi';
 import * as auth from '../../utils/auth';
 import Preloader from '../Preloader/Preloader';
 
@@ -24,7 +23,7 @@ function App() {
   const [infoTooltipMessage, setInfoTooltipMessage] = useState('');
   
   // CurrentUser
-  const [currentUser, setCurrentUser] = useState({email: '', name: '' });
+  const [currentUser, setCurrentUser] = useState({});
   // Preloader
   const [isLoading, setIsLoading] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
@@ -47,13 +46,20 @@ function App() {
     routes.pathname !== '/signin' && 
     routes.pathname !== '/signup' &&
     routes.pathname !== '/*'; 
+
+
+  
+  //Закрыть модальное окно  
+  function closeInfoToolTip() {
+    setIsInfoTooltipOpen(false);
+  }  
   
   // Регистрация
   function handleRegister(name, email, password) {
     setIsLoading(true);
     auth.register(name, email, password)
-        .then(() => {
-                              
+        .then((data) => {
+            if (data._id) {                              
               setIsInfoTooltipOpen(true);
               setTimeout(() => {
                 navigate('/signin');
@@ -62,6 +68,7 @@ function App() {
                 
             },
                 3000)
+          }
         })
         .catch((error) => {
           console.log(`Ошибка ${error}`);
@@ -78,13 +85,12 @@ function App() {
   function handleAuthorize(email, password) {
     setIsLoading(true);
     auth.authorize(email, password)
-        .then((jwt) => {
-          if (jwt.token) {
+        .then((res) => {
+          if (res.token) {
           setLoggedIn(true);
-          localStorage.setItem('jwt', jwt.token);
-         // setCurrentUser(res);
-        
-          //handleTokenCheck();
+          localStorage.setItem('token', res.token);
+          //setCurrentUser(res.user);
+         //handleTokenCheck();
           
           navigate('/movies');
         }
@@ -95,67 +101,15 @@ function App() {
         .finally(() => setIsLoading(false))
   }
 
-  // выйти из аккаунта
-  function handleLogout() {
-            setCurrentUser({ })
-            localStorage.removeItem('jwt');
-            localStorage.clear();
-            navigate('/');
-            setLoggedIn(false);
-  }
-
-  // Проверка наличия токена
- // function handleTokenCheck() {
-   //const token = localStorage.getItem('jwt');
-   //if (token) {
-    //   auth.checkToken(token)
-    //  .then((res) => {
-    //  if (res) {
-     //   setLoggedIn(true);
-     //   navigate('/movies');
-     //   setCurrentUser({ name: res.name, email: res.email });
-      //}
-    //})
-  //.catch((error) => {
-  //  console.log(`${error}`);
- //});
-//}
-//};
-
- //useEffect(() => {
- // handleTokenCheck();
- //}, [loggedIn]);
-
   
-// Получение карточек с фильмами
-  useEffect(() => {
-      mainApi.getMovies()
-      .then((cardsInfo) => {
-        setFavouriteList(cardsInfo);
-        localStorage.setItem('savedMoviesList', JSON.stringify(cardsInfo))
-      })
-      .catch((error) => {
-          console.log(`Ошибка ${error}`);
-      })
-      .finally(() => setIsLoading(false))
-      setIsLoading(true)
-      MoviesApi.getMovies()
-          .then((cardsInfo) => {
-              sessionStorage.setItem('initialMoviesList', JSON.stringify(cardsInfo))
-          })
-          .catch((error) => console.log(`Ошибка ${error}`))
-          .finally(() => setIsLoading(false))
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localStorage.savedMoviesList]);
-
-//Получить данные пользователя (проверка токена и авторизация)
+//Проверяем наличие токена и подтверждаем авторизацию
 useEffect(() => {
-  const jwt = localStorage.getItem('jwt');
-  if (jwt) {
+  const token = localStorage.getItem('token');
+    if (token) {
     setIsLoading(true);
     mainApi.getUserInfo()
       .then((data) => {
-        console.log(data);
+        console.log('data', data);
         setLoggedIn(true);
         setCurrentUser(data);
         navigate(routes.pathname);
@@ -164,6 +118,16 @@ useEffect(() => {
       .finally(() => setIsLoading(false))
   }
 }, []);
+
+
+  // выйти из аккаунта
+  function handleLogout() {
+            setCurrentUser({ })
+            localStorage.removeItem('token');
+            localStorage.clear();
+            navigate('/');
+            setLoggedIn(false);
+  }
 
 //Получить данные пользователя
 useEffect(() => {
@@ -181,11 +145,10 @@ useEffect(() => {
   // Изменить данные пользователя
   function changeProfileInfo({name, email}) {
     setIsLoading(true);
-    mainApi.editUserInfo({name, email} )
+    mainApi.editUserInfo(name, email)
       .then((data) => {
         setCurrentUser(data);   
         setIsInfoTooltipOpen(true);
-            
         setInfoTooltipMessage('Ваши данные изменены');
         setTimeout(() => {
           setIsInfoTooltipOpen(false);
@@ -201,21 +164,8 @@ useEffect(() => {
       .finally(() => setIsLoading(false));
   }
 
-  //Закрыть модальное окно  
-  function closeInfoToolTip() {
-    setIsInfoTooltipOpen(false);
-    
-  }
 
-  // Обработка ошибок
- // useEffect(() => {
- //   if (error) {
-  //    setMessageError(`Что-то пошло не так ${error}!`);
-  //    setIsInfoTooltipOpen(true);
-  //  }
-  //}, [error]);
-  
-  // Запрос карточек с сохраненными фильмами
+  // Запрос карточек с моими фильмами
   useEffect(() => {
     if (loggedIn && currentUser) {
     mainApi.getMovies()
@@ -228,44 +178,15 @@ useEffect(() => {
     .catch((error) => {
       console.log(`Ошибка ${error}`);
     })
-  //  .finally(() => setIsLoading(false))
-  //  setIsLoading(true)
-  //  MoviesApi.getMovies()
-  //    .then((cardsInfo) => {
-  //      sessionStorage.setItem('initialMoviesList', JSON.stringify(cardsInfo))
-  //    })
-   //   .catch((error) => setError(error))
-   //   .finally(() => setIsLoading(false))
   }
   }, [currentUser, loggedIn]); 
 
-  // Получить данные карточек с фильмами
-  //function setMoviesData() {
-  //  setIsLoading(true);
-  //  mainApi.getMovies()
-  //    .then((cardsInfo) => {
-  //      setFavouriteList(cardsInfo);
-   //     localStorage.setItem('savedMoviesList', JSON.stringify(cardsInfo))
-    //    if (!sessionStorage.initialMoviesList) {
-    //      MoviesApi.getMovies()
-     //       .then((cardsInfo) => {
-      //        sessionStorage.setItem('initialMoviesList', JSON.stringify(cardsInfo))
-        //    })
-         //   .catch((error) => console.log(`Ошибка ${error}`))
-       // }
-     // })
-  //    .catch((error) => {
-  //      console.log(`Ошибка ${error}`)
-   //   })
-   //   .finally(() => setIsLoading(false))
- // }
-
   // Добавить фильм в избранное
-  function handleSaveMovie(movieData) {
+  function handleSaveMovie(movie) {
     setIsLoading(true);
-    mainApi.saveMovie(movieData)
-      .then((savedMovie) => {
-        setFavouriteList([...favouriteList, savedMovie]);
+    mainApi.saveMovie(movie)
+      .then((newMovie) => {
+        setFavouriteList([...favouriteList, newMovie]);
        // let favouriteMovies = JSON.parse(localStorage.getItem('savedMoviesList'))
        // favouriteMovies = favouriteMovies.concat(savedMovie)
        // localStorage.setItem('savedMoviesList', favouriteMovies)
@@ -275,15 +196,15 @@ useEffect(() => {
   }
 
   // Удалить фильм из избранного
-  function handleDeleteMovie(movieData) {
+  function handleDeleteMovie(movie) {
     //const id = movieData.movieId || movieData.id;
     //const movieId = movieData._id || favouriteList.find((item) => item.movieId === movieData.id)._id;
     //console.log(id);
-    const savedMovie = favouriteList.find((item) => item.movieId === movieData.id || item.movieId === movieData.id)
+    const savedMovie = favouriteList.find((item) => item.movieId === movie.id || item.movieId === movie.movieid)
     mainApi.deleteMovie(savedMovie._id)
       .then(() => {
         const newMoviesList = favouriteList.filter(m => {
-          if (movieData.id === m.movieId || movieData.movieId === m.movieId) {
+          if (movie.id === m.movieId || movie.movieId === m.movieId) {
             return false;
           } else {
             return true;
@@ -323,14 +244,14 @@ useEffect(() => {
           <Route exact path='/signin' element={
             <Login 
               onLogin={handleAuthorize}
-              loggedIn={loggedIn}
-              
+              navigate={navigate}
             />
           } />
           
           <Route path='/movies' element={
             <ProtectedRoute loggedIn={loggedIn}> 
               <Movies
+                loggedIn={loggedIn}              
                 favouriteList={favouriteList}
                 handleSaveMovie={handleSaveMovie}
                 handleDeleteMovie={handleDeleteMovie}
@@ -341,8 +262,8 @@ useEffect(() => {
           <Route path='/saved-movies' element={
             <ProtectedRoute loggedIn={loggedIn}>
               <SavedMovies
+                loggedIn={loggedIn} 
                 favouriteList={favouriteList}
-                handleSaveMovie={handleSaveMovie}
                 handleDeleteMovie={handleDeleteMovie}
               />
             </ProtectedRoute> 
@@ -351,6 +272,7 @@ useEffect(() => {
           <Route path='/profile' element={
             <ProtectedRoute loggedIn={loggedIn}>
               <Profile
+                loggedIn={loggedIn} 
                 handleLogout={handleLogout}
                 changeProfileInfo={changeProfileInfo}
               />

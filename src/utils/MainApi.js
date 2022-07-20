@@ -1,5 +1,5 @@
 class MainApi {
-    constructor(url) {
+    constructor({url}) {
       this._url = url;
       
     }
@@ -17,7 +17,7 @@ class MainApi {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          authorization: localStorage.getItem('jwt'),
+          'Authorization': localStorage.getItem('token'),
         },
       })
       .then(this._checkResponse);
@@ -29,7 +29,7 @@ class MainApi {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          authorization: localStorage.getItem('jwt'),
+          'Authorization': localStorage.getItem('token'),
         },
         body: JSON.stringify({
           name: data.name,
@@ -45,7 +45,8 @@ class MainApi {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          authorization: localStorage.getItem('jwt'),
+          
+          'Authorization': localStorage.getItem('token'),
         },
       })
       .then(this._checkResponse);
@@ -58,7 +59,7 @@ class MainApi {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          authorization: localStorage.getItem('jwt'),
+          'Authorization': localStorage.getItem('token'),
         },
         body: JSON.stringify({
           country: movie.country,
@@ -83,7 +84,7 @@ class MainApi {
       return fetch(`${this._url}/movies/${movieId}`, {
         method: 'DELETE',
         credentials: 'include',
-        headers: { authorization: localStorage.getItem('jwt') }
+        headers: { 'Authorization': localStorage.getItem('token') }
       })
       .then(this._checkResponse);
     }
